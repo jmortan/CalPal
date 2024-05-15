@@ -25,7 +25,7 @@
   background-color: white;
   opacity: 0.9;
   border: 1px solid #ccc;
-  font-size: large;
+  font-size: small;
 }
 
 .drawModeButton{
@@ -40,7 +40,7 @@
   background-color: white;
   opacity: 0.9;
   border: 1px solid #ccc;
-  font-size: large;
+  font-size: small;
 }
 
 .addEventModeButton{
@@ -55,7 +55,7 @@
   background-color: white;
   opacity: 0.9;
   border: 1px solid #ccc;
-  font-size: large;
+  font-size: small;
 }
 
 .addEventModeButtonErase{

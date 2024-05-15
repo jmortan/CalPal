@@ -1,7 +1,7 @@
 # CalPal Set up Instructions
 ## Mouse Branch vs Touch Branch 
 There are two branches of this project that run based on either mouse input or touch input. 
-This is the touch branch. To run the project with mouse input please switch to the mouseInput branch.
+This is the mouse branch. To run the project with touch input please switch to the main branch.
 
 ## Frontend Files
 

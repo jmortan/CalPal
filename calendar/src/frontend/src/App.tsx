@@ -36,7 +36,7 @@ function App() {
 
   //set up Refs for accessing nonStateful elements from child components
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const canvHeight = window.innerHeight*0.74;
+  const canvHeight = window.innerHeight*0.78;
   const canvWidth = window.innerWidth;
   const bboxRef = useRef<bbox | undefined>(undefined);
 
@@ -163,7 +163,7 @@ function App() {
 
   return (
     <div className='container'>
-      <CalTheme width={window.innerWidth} height={window.innerHeight*0.2} newCalTheme={calTheme} setNewCalTheme={setCalTheme} dateState={dateState}></CalTheme>
+      <CalTheme width={window.innerWidth} height={window.innerHeight*0.16} newCalTheme={calTheme} setNewCalTheme={setCalTheme} dateState={dateState}></CalTheme>
       <button className='eraseModeButton' onClick={onEraseClick} style={{ backgroundColor: calMode ? 'white' : 'yellow' }}>Erase</button>
       <button className='drawModeButton' onClick={onDrawClick} style={{ backgroundColor: calMode ? 'yellow' : 'white' }}>Draw</button>
       <button className={calMode?'addEventModeButton addEventModeButtonDraw':'addEventModeButton addEventModeButtonErase'} onClick={onAddEventClick}>Add Event</button>

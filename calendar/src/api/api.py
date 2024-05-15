@@ -69,7 +69,7 @@ def add_event():
     coord1, coord2 = data['bbox'][0], data['bbox'][1]
     img = base64_to_cv2_image(canvas_data)
     cropped = crop_canvas(img, coord1, coord2)
-    #cv2.imwrite("testing.png", cropped)
+    # cv2.imwrite("testing_word.png", cropped)
     event_name = canvas_handwriting_detection(cropped,  visionCreds) 
     if (event_name=="No text detected"):
         return Response("Not detected", status=status.HTTP_500_INTERNAL_SERVER_ERROR)

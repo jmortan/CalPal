@@ -1,6 +1,6 @@
 /* Credit AnkurSheel: https://github.com/AnkurSheel/react-drawing-interaction/tree/master */
 
-import React, { useCallback, useEffect, useState, Dispatch, SetStateAction } from 'react';
+import { useCallback, useEffect, useState, Dispatch, SetStateAction } from 'react';
 import axios from 'axios';
 import './css/canvas.css';
 
@@ -42,7 +42,7 @@ const Canvas = ({ width, height, dateState, calMode, setNewCalTheme, bboxRef, mo
     }
 
 
-    const startPaint = useCallback((event: TouchEvent) => {
+    const startPaint = useCallback((event: MouseEvent) => {
         const coordinates = getCoordinates(event);
         if (coordinates && calMode) {
             setMousePosition(coordinates);
@@ -57,10 +57,10 @@ const Canvas = ({ width, height, dateState, calMode, setNewCalTheme, bboxRef, mo
             return;
         }
         const canvas: HTMLCanvasElement = canvasRef.current;
-        canvas.addEventListener('touchstart', startPaint);
+        canvas.addEventListener('mousedown', startPaint);
         return () => {
             //console.log("Removing event listener")
-            canvas.removeEventListener('touchstart', startPaint);
+            canvas.removeEventListener('mousedown', startPaint);
         };
     }, [startPaint]);
 
@@ -106,7 +106,7 @@ const Canvas = ({ width, height, dateState, calMode, setNewCalTheme, bboxRef, mo
     },[fetchMonth])
 
     const paint = useCallback(
-        (event: TouchEvent) => {
+        (event: MouseEvent) => {
             if (isPainting && calMode) {
                 const newMousePosition = getCoordinates(event);
                 if (mousePosition && newMousePosition) {
@@ -124,9 +124,9 @@ const Canvas = ({ width, height, dateState, calMode, setNewCalTheme, bboxRef, mo
             return;
         }
         const canvas: HTMLCanvasElement = canvasRef.current;
-        canvas.addEventListener('touchmove', paint);
+        canvas.addEventListener('mousemove', paint);
         return () => {
-            canvas.removeEventListener('touchmove', paint);
+            canvas.removeEventListener('mousemove', paint);
         };
     }, [paint]);
 
@@ -140,23 +140,23 @@ const Canvas = ({ width, height, dateState, calMode, setNewCalTheme, bboxRef, mo
             return;
         }
         const canvas: HTMLCanvasElement = canvasRef.current;
-        canvas.addEventListener('touchend', exitPaint);
-        canvas.addEventListener('touchcancel', exitPaint);
+        canvas.addEventListener('mouseup', exitPaint);
+        canvas.addEventListener('mouseleave', exitPaint);
         return () => {
-            canvas.removeEventListener('touchend', exitPaint);
-            canvas.removeEventListener('touchcancel', exitPaint);
+            canvas.removeEventListener('mouseup', exitPaint);
+            canvas.removeEventListener('mouseleave', exitPaint);
         };
     }, [exitPaint]);
 
     
 
-    const getCoordinates = (event: TouchEvent): Coordinate | undefined => {
+    const getCoordinates = (event: MouseEvent): Coordinate | undefined => {
         if (!canvasRef.current) {
             return;
         }
 
         const canvas: HTMLCanvasElement = canvasRef.current;
-        return { x: event.changedTouches[0].pageX + 8, y: event.changedTouches[0].pageY - canvas.offsetTop - 0.87*(window.innerHeight-height)};
+        return { x: event.pageX + 3, y: event.pageY - canvas.offsetTop - 0.9*(window.innerHeight-height)};
     };
 
     const drawLine = (originalMousePosition: Coordinate, newMousePosition: Coordinate) => {
