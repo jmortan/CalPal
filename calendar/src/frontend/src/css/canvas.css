@@ -1,0 +1,13 @@
+.draw {
+    font-family: "Pacifico", cursive;
+    text-align: center;
+
+  }
+
+  .centered {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -28vh);
+    text-align: center;
+  }

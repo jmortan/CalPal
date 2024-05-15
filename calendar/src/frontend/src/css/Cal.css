@@ -1,0 +1,44 @@
+.rbc-toolbar {
+    height: 16vh;
+    margin-bottom: 0px;
+}
+
+.rbc-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 3px;
+}
+
+.rbc-toolbar .rbc-toolbar-label {
+    position: absolute;
+    transform: translate(-37vw, 4vh);
+    font-size: xxx-large;
+    color:black;
+    z-index: 1;
+    font-weight: bold;
+    padding-bottom: 1vh;
+    font-family: Rosarivo, cursive;
+}
+
+.rbc-date-cell button{
+    font-family: "Rosarivo", cursive;
+}
+
+.rbc-toolbar button {
+    font-family: "Rosarivo", cursive;
+    font-weight: 400;
+    font-style: normal;
+    color: black;
+    background-color: white;
+    opacity: 0.9;
+    font-size: large;
+    font-weight: bold;
+    padding: 6px;
+}
+
+.rbc-btn-group {
+    position: relative;
+    transform: translate(41.5vw,3vh);
+    z-index:1;
+}
