@@ -12,6 +12,7 @@
     "@types/react-dom": "^18.2.22",
     "axios": "^1.6.8",
     "date-fns": "^3.6.0",
+    "npm": "^11.2.0",
     "react": "^18.2.0",
     "react-big-calendar": "^1.11.2",
     "react-calendar": "^4.8.0",
@@ -48,5 +49,5 @@
   "devDependencies": {
     "@types/react-big-calendar": "^1.8.9"
   },
-  "proxy": "http://127.0.0.1:5000"
+  "proxy": "http://127.0.0.1:5000/"
 }

@@ -70,7 +70,9 @@ class CalData:
     
     
 class Event: 
-    def __init__(self, coord1, coord2, name):
+    def __init__(self, coord1, coord2, name, assistant_scheduled=False, event_time=None):
         self.coord1 = coord1
         self.coord2 = coord2
         self.name = name
+        self.assistant_scheduled=assistant_scheduled
+        self.event_time = event_time
