@@ -97,7 +97,15 @@ def add_event():
     except:
         return Response("Unable to add event", status = status.HTTP_500_INTERNAL_SERVER_ERROR)
     """
-
+@app.route('/addSpeech', methods=['POST'])
+def add_speech():
+    data = request.json
+    recording = data['recording']
+    #TODO: Transcribe speech
+    transcribed="I want to run a marathon"
+    #TODO: Get events from ChatGPT. I'm expecting something like this, I need the dateString to be in the below format.
+    events = [{'eventName': 'Short Jog la la la la la la la la la la la la la la la la la la - 9 PM','description':'Only a short jog today to save energy!','dateString':'Mar 04 2025'}]
+    return json.dumps(events)
 
 @app.route('/updateGesture/<update>', methods = ['HEAD'])
 def update_gesture(update):
