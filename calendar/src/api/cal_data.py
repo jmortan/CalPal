@@ -24,10 +24,10 @@ class CalData:
         new_prompt = "A day in " + self.months[month] + " with " + events + "in the style of a painting"
         return new_prompt
         
-    def add_event(self, month, canvas, coord1, coord2, event_id, event_name):
+    def add_event(self, month, canvas, coord1, coord2, event_id, event_name, event_start, event_end, assistant_scheduled=False):
         #assert(month>=0)
         #assert(month<11)
-        new_event = Event(coord1, coord2, event_name)
+        new_event = Event(coord1, coord2, event_name, event_start, event_end, assistant_scheduled)
         month_events = self.events[month]
         month_events[event_id] = new_event
         self.canvases[month] = canvas
@@ -70,9 +70,10 @@ class CalData:
     
     
 class Event: 
-    def __init__(self, coord1, coord2, name, assistant_scheduled=False, event_time=None):
+    def __init__(self, coord1, coord2, name, event_start, event_end, assistant_scheduled=False):
         self.coord1 = coord1
         self.coord2 = coord2
         self.name = name
         self.assistant_scheduled=assistant_scheduled
-        self.event_time = event_time
+        self.event_start = event_start
+        self.event_end = event_end
