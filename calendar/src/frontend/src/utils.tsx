@@ -49,3 +49,23 @@ export function getFirstLastDay():any {
   
     return selectedDate;
   }
+
+  export function getPositionFromDate(canvas:any, dateRange:any, height:any, targetDate:any) {
+    const rect = canvas.getBoundingClientRect();
+
+    const daysInMonth = Math.floor((dateRange.endDate.getTime() - dateRange.startDate.getTime()) / (1000 * 60 * 60 * 24));
+    const weeksInMonth = Math.ceil(daysInMonth / 7); // Calculate number of weeks
+    const squareWidth = canvas.width / 7;
+    const squareHeight = canvas.height / weeksInMonth;
+
+    // Get the difference in days between the startDate and the targetDate
+    const diffInDays = Math.floor((targetDate.getTime() - dateRange.startDate.getTime()) / (1000 * 60 * 60 * 24));
+    
+    const col = diffInDays % 7; // Day of the week (0-6)
+    const row = Math.floor(diffInDays / 7); // Week number in the month
+
+    const x = col * squareWidth + rect.left;
+    const y = row * squareHeight + rect.top - 0.8 * (window.innerHeight - height);
+
+    return { x, y };
+}

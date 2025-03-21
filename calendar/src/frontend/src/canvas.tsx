@@ -57,6 +57,9 @@ const Canvas = ({ width, height, dateState, calMode, setNewCalTheme, bboxRef, mo
             return;
         }
         const canvas: HTMLCanvasElement = canvasRef.current;
+        canvas.addEventListener("touchstart", (e) => {
+            e.preventDefault();
+          }, { passive: false });
         canvas.addEventListener('touchstart', startPaint);
         return () => {
             //console.log("Removing event listener")
@@ -124,6 +127,9 @@ const Canvas = ({ width, height, dateState, calMode, setNewCalTheme, bboxRef, mo
             return;
         }
         const canvas: HTMLCanvasElement = canvasRef.current;
+        canvas.addEventListener("touchmove", (e) => {
+            e.preventDefault();
+          }, { passive: false });
         canvas.addEventListener('touchmove', paint);
         return () => {
             canvas.removeEventListener('touchmove', paint);
@@ -140,6 +146,12 @@ const Canvas = ({ width, height, dateState, calMode, setNewCalTheme, bboxRef, mo
             return;
         }
         const canvas: HTMLCanvasElement = canvasRef.current;
+        canvas.addEventListener("touchend", (e) => {
+            e.preventDefault();
+          }, { passive: false });
+        canvas.addEventListener("touchcancel", (e) => {
+            e.preventDefault();
+          }, { passive: false });
         canvas.addEventListener('touchend', exitPaint);
         canvas.addEventListener('touchcancel', exitPaint);
         return () => {

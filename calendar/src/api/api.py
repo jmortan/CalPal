@@ -99,12 +99,19 @@ def add_event():
     """
 @app.route('/addSpeech', methods=['POST'])
 def add_speech():
-    data = request.json
-    recording = data['recording']
+    if "audio" not in request.files:
+        return json.dumps({"error": "No audio file found"})
+
+    audio_file = request.files["audio"]
+    UPLOAD_FOLDER = "state_data"
+    filename = "recording.wav"
+    file_path = os.path.join(UPLOAD_FOLDER, filename)
+    audio_file.save(file_path)
+    # recording = data['recording']
     #TODO: Transcribe speech
     transcribed="I want to run a marathon"
     #TODO: Get events from ChatGPT. I'm expecting something like this, I need the dateString to be in the below format.
-    events = [{'eventName': 'Short Jog la la la la la la la la la la la la la la la la la la - 9 PM','description':'Only a short jog today to save energy!','dateString':'Mar 04 2025'}]
+    events = [{'eventName': 'Short Jog la la la la la la la la la la la la la la la la la la','description':'Only a short jog today to save energy!','dateString':'2025-03-04T21:00:00.000Z'}]
     return json.dumps(events)
 
 @app.route('/updateGesture/<update>', methods = ['HEAD'])

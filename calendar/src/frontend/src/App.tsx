@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import { getFirstLastDay, getDateFromPosition } from './utils';
+import { getFirstLastDay, getDateFromPosition, getPositionFromDate} from './utils';
 import './css/App.css';
 import Cal from './Cal';
 import Canvas from './canvas';
 import CalTheme from './calTheme';
+import AudioRecorder from './AudioRecorder';
 import axios from 'axios';
 
 //Custom Types
@@ -39,6 +40,9 @@ function App() {
   const canvHeight = window.innerHeight*0.74;
   const canvWidth = window.innerWidth;
   const bboxRef = useRef<bbox | undefined>(undefined);
+  const [recording, setRecording] = useState(false);
+  const [mediaRecorder, setMediaRecorder] = useState<any>(null);
+  const [audioChunks, setAudioChunks] = useState<any[]>([]);
 
 
 
@@ -72,6 +76,97 @@ function App() {
     }
     setDateState({month: currMonth, startDate: range.start, endDate: range.end})
   }
+
+  const wrapText = (text: string, maxWidth: number) => {
+    const words = text.split(" ");
+    let lines: string[] = [];
+    let currentLine = "";
+  
+    words.forEach(word => {
+      if ((currentLine + word).length <= maxWidth) {
+        currentLine += (currentLine ? " " : "") + word;
+      } else {
+        lines.push(currentLine);
+        currentLine = word;
+      }
+    });
+  
+    if (currentLine) lines.push(currentLine);
+    return lines;
+  };
+  
+  const fadeInText = (
+    ctx: any, 
+    text: string, 
+    x: number, 
+    y: number, 
+    duration = 1000, 
+    delay = 0, 
+    callback?: () => void
+  ) => {
+    let opacity = 0;
+    const startTime = performance.now() + delay;
+  
+    const animate = (currentTime: number) => {
+      let elapsed = currentTime - startTime;
+      if (elapsed < 0) {
+        requestAnimationFrame(animate);
+        return;
+      }
+      let progress = Math.min(elapsed / duration, 1);
+      opacity = progress;
+  
+      ctx.clearRect(x, y - 15, ctx.measureText(text).width, 20);
+      ctx.font = "15px Rosario";
+      ctx.fillStyle = `rgba(0, 0, 0, ${opacity})`;
+      ctx.fillText(text, x, y);
+  
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      } else if (callback) {
+        callback();
+      }
+    };
+  
+    requestAnimationFrame(animate);
+  };
+
+  
+  
+  const onAgentAddEvent = async (formData:any) => {
+            try {
+              const response = await axios.post("/addSpeech", formData);
+              // Process the response here
+              response.data.forEach((returnedEvent: any) => {
+                const dateString = returnedEvent['dateString'];
+                const date = new Date(dateString);
+                const canvas = canvasRef.current;
+                if (canvas) {
+                  const { x, y } = getPositionFromDate(canvas, dateState, canvHeight, date);
+                  const ctx = canvas.getContext("2d");
+                  if (ctx) {
+                    const text = returnedEvent['eventName'] + "- " + date.toLocaleTimeString("en-US", {
+                      timeZone: "UTC",
+                      hour: "numeric",
+                      hour12: true,
+                    });
+                    const maxCharsPerLine = 30;
+                    const lines = wrapText(text, maxCharsPerLine);
+  
+                    // Animate each line with a staggered fade-in effect
+                    lines.forEach((line, index) => {
+                      fadeInText(ctx, line, x + 10, y + 10 + index * 20, 1000, index * 300);
+                    });
+                  }
+                }
+              });
+            } catch (error) {
+              console.error("Upload failed:", error);
+            }
+         
+  };
+  
+  
 
   const onAddEventClick = async () => {
     const canvas = canvasRef.current;
@@ -158,12 +253,13 @@ function App() {
 
   
   useEffect(() => {
-      pollBackend()
+      // pollBackend()
   }, []);
 
   return (
     <div className='container'>
       <CalTheme width={window.innerWidth} height={window.innerHeight*0.2} newCalTheme={calTheme} setNewCalTheme={setCalTheme} dateState={dateState}></CalTheme>
+      <AudioRecorder onUpload={onAgentAddEvent}></AudioRecorder>
       <button className='eraseModeButton' onClick={onEraseClick} style={{ backgroundColor: calMode ? 'white' : 'yellow' }}>Erase</button>
       <button className='drawModeButton' onClick={onDrawClick} style={{ backgroundColor: calMode ? 'yellow' : 'white' }}>Draw</button>
       <button className={calMode?'addEventModeButton addEventModeButtonDraw':'addEventModeButton addEventModeButtonErase'} onClick={onAddEventClick}>Add Event</button>
