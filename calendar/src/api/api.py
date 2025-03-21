@@ -83,24 +83,7 @@ def add_event():
     with open(FILEPATH, 'wb') as file:
             pickle.dump(calData, file)
     return Response(created_event['id'], status = status.HTTP_200_OK)
-    """
-    try:
-        img = base64_to_cv2_image(canvas_data)
-        cropped = crop_canvas(img, coord1, coord2)
     
-        event_name = canvas_handwriting_detection(cropped,  visionCreds) 
-        event_query = event_name + " on " + dateString
-        created_event = service.events().quickAdd(calendarId = calData.get_cal_id(), text=event_query).execute()
-
-        calData.add_event(month, canvas_data, coord1, coord2, created_event['id'], event_name)
-
-        with open(FILEPATH, 'wb') as file:
-                pickle.dump(calData, file)
-        return Response(created_event['id'], status = status.HTTP_200_OK)
-    
-    except:
-        return Response("Unable to add event", status = status.HTTP_500_INTERNAL_SERVER_ERROR)
-    """
 @app.route('/addSpeech', methods=['POST'])
 def add_speech():
     data = request.json
