@@ -18,7 +18,11 @@ class IntentionClassifierModule():
                     "content": [
                     {
                         "type": "text",
-                        "text": "You are a master at deducing a user's intentions. You will receive a message from the user and your job is to figure out whether or not the user is stating a goal they would like to achieve. "
+                        "text": (
+                            "You are a master at deducing a user's intentions. " +
+                            "You will receive a message from the user. " +
+                            "Your job is to figure out whether or not the user is stating a goal they would like to achieve."
+                        )
                     }
                     ]
                 },
