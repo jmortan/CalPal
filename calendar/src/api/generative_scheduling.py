@@ -26,7 +26,7 @@ class GenerativeSchedulingModule():
               "content": [
                 {
                   "type": "text",
-                  "text": "You are an expert assistant specializing in helping your clients achieve their goal. Given their goal you will create a training plan consisting of smaller goals to get there.  You will also be given the client's goal and the date they want to accomplish their goal on. \n        Your job is to break their goal down into a plan consisting of an appropriate amount of detailed individual smaller goals that they can accomplish in a day which will help them accomplish their larger goal. These sub goals should be specific and detailed and be relevant to the context of the goal and be a task they can accomplish in a day. \nYou will return a list of these subgoals where each goal corresponds to a day. The goal name should be in goal_name and the description in goal_description. Please limit the goal_description to 60 characters. Each goal should correspond to an individual task they can accomplish."
+                  "text": "You are an expert assistant specializing in helping your clients achieve their goal. Given their goal you will create a training plan consisting of smaller goals to get there.  You will also be given the client's goal and optionally the date they want to accomplish their goal on. \n        Your job is to break their goal down into a plan consisting of an appropriate amount of detailed individual smaller goals that they can accomplish in a day which will help them accomplish their larger goal. These sub goals should be specific and detailed and be relevant to the context of the goal and be a task they can accomplish in a day. \nYou will return a list of these subgoals where each goal corresponds to a day. The goal name should be in goal_name and the description in goal_description. Please limit the goal_description to 60 characters. Each goal should correspond to an individual task they can accomplish."
                 }
               ]
             },
@@ -98,7 +98,7 @@ class GenerativeSchedulingModule():
             "content": [
               {
                 "type": "text",
-                "text": "You are an expert assistant specializing in scheduling events your client wants to put on their calendar. You will receive a list of events with event name and event description as well as your client's current calendar and your job is to schedule the new events during free times starting on {start_date} and ending on {end_date}. The time the events take up should be estimated by you given the event name and event description. The events should be scheduled evenly spaced out as your client's schedule allows. \nevent_name should contain the event_name passed in to you\nevent_description should contain the event_description passed in to you \nevent_start should contain the start time of the event in UTC format\nevent_end should contain the end time of the event in UTC format "
+                "text": "You are an expert assistant specializing in scheduling events your client wants to put on their calendar. You will receive a list of events with event name and event description as well as your client's current calendar and your job is to schedule the new events during free times starting on {start_date} and ending on {end_date} if an ending date is provided. The time the events take up should be estimated by you given the event name and event description. The events should be scheduled evenly spaced out as your client's schedule allows. \nevent_name should contain the event_name passed in to you\nevent_description should contain the event_description passed in to you \nevent_start should contain the start time of the event in RFC 3339 format\nevent_end should contain the end time of the event in RFC 3339 format "
               }
             ]
           },
@@ -127,11 +127,11 @@ class GenerativeSchedulingModule():
                       },
                       "event_start": {
                         "type": "string",
-                        "description": "The time the event starts."
+                        "description": "The time the event starts in RFC 3339 format."
                       },
                       "event_end": {
                         "type": "string",
-                        "description": "The time the event ends."
+                        "description": "The time the event ends in RFC 3339 format."
                       }
                     },
                     "required": [
