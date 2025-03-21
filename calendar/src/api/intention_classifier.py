@@ -15,23 +15,23 @@ class IntentionClassifierModule():
                 {
                     "role": "system",
                     "content": [
-                    {
-                        "type": "text",
-                        "text": (
-                            "You are a master at deducing a user's intentions. " +
-                            "You will receive a message from the user. " +
-                            "Your job is to figure out whether or not the user is stating a goal they would like to achieve."
-                        )
-                    }
+                        {
+                            "type": "text",
+                            "text": (
+                                "You are a master at deducing a user's intentions. " +
+                                "You will receive a message from the user. " +
+                                "Your job is to figure out whether or not the user is stating a goal they would like to achieve."
+                            )
+                        }
                     ]
                 },
                 {
                     "role": "user",
                     "content": [
-                    {
-                        "type": "text",
-                        "text": user_message
-                    }
+                        {
+                            "type": "text",
+                            "text": user_message
+                        }
                     ]
                 },
             ],
@@ -41,17 +41,17 @@ class IntentionClassifierModule():
                     "name": "goal_recognition",
                     "strict": True,
                     "schema": {
-                    "type": "object",
-                    "properties": {
-                        "is_goal": {
-                        "type": "boolean",
-                        "description": "Indicates if the user message is recognized as a goal."
-                        }
-                    },
-                    "required": [
-                        "is_goal"
-                    ],
-                    "additionalProperties": False
+                        "type": "object",
+                        "properties": {
+                            "is_goal": {
+                            "type": "boolean",
+                            "description": "Indicates if the user message is recognized as a goal."
+                            }
+                        },
+                        "required": [
+                            "is_goal"
+                        ],
+                        "additionalProperties": False
                     }
                 }
             },
