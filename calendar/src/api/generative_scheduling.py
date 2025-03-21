@@ -1,7 +1,8 @@
 import json
 from openai import OpenAI
-from datetime import datetime, timezone
+from datetime import datetime
 from open_ai_client import OpenAiClient
+from tzlocal import get_localzone
 
 
 class GenerativeSchedulingModule():
@@ -99,7 +100,7 @@ class GenerativeSchedulingModule():
         return response.choices[0].message
 
     def schedule_goals(self, goals, end_date):
-        start_date = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+        start_date = datetime.now(get_localzone()).isoformat()
         response = self.client.chat.completions.create(
         model="gpt-4o",
         messages=[

@@ -6,6 +6,8 @@ from utils import *
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
 from enum import Enum
+from tzlocal import get_localzone
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -76,8 +78,14 @@ def add_event():
     event_query = event_name + " on " + dateString
     created_event = service.events().quickAdd(calendarId = calData.get_cal_id(), text=event_query).execute()
 
-    event_start = created_event["start"]["dateTime"]
-    event_end = created_event["end"]["dateTime"]
+    # Set up time defaults for all day events
+    local_timezone = get_localzone()
+    now = datetime.now(local_timezone)
+    start_of_day = now.replace(hour=0, minute=0, second=0, microsecond=0).isoformat()
+    end_of_day = now.replace(hour=23, minute=59, second=59, microsecond=999999).isoformat()
+
+    event_start = created_event.get("start", {"dateTime": start_of_day}).get("dateTime")
+    event_end = created_event.get("end", {"dateTime": end_of_day}).get("dateTime")
 
     calData.add_event(month, canvas_data, coord1, coord2, created_event['id'], event_name, event_start, event_end, False)
     with open(FILEPATH, 'wb') as file:
