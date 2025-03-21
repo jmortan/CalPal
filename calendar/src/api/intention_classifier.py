@@ -1,13 +1,12 @@
 import json
 from openai import OpenAI
 from speech_to_text import SpeechToTextModule
+from open_ai_client import OpenAiClient
 
 
 class IntentionClassifierModule():
-    def __init__(self):
-        f = open('./state_data/open_ai_token.json')
-        self.api_token = json.load(f)['goal_requestor_token']
-        self.client = OpenAI(api_key=self.api_token) 
+    def __init__(self, client):
+        self.client = client
     
     def classify_intentions(self, user_message):
         response = self.client.chat.completions.create(
@@ -76,5 +75,6 @@ class IntentionClassifierModule():
         
 
 if __name__ == "__main__":
-    module = IntentionClassifierModule()
+    client = OpenAiClient().get_client()
+    module = IntentionClassifierModule(client)
     module.main()

@@ -2,13 +2,12 @@ import json
 from openai import OpenAI
 import wave
 import pyaudio
+from open_ai_client import OpenAiClient
 
 
 class SpeechToTextModule():
-    def __init__(self):
-        f = open('./state_data/open_ai_token.json')
-        self.api_token = json.load(f)['goal_requestor_token']
-        self.client = OpenAI(api_key=self.api_token) 
+    def __init__(self, client):
+        self.client=client
 
     
     def speech_to_text(self, audio_file):
@@ -66,5 +65,6 @@ class SpeechToTextModule():
         
 
 if __name__ == "__main__":
-    module = SpeechToTextModule()
+    client = OpenAiClient().get_client()
+    module = SpeechToTextModule(client)
     module.main()

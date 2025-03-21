@@ -1,13 +1,12 @@
 import json
 from openai import OpenAI
 from datetime import datetime, timezone
+from open_ai_client import OpenAiClient
 
 
 class GenerativeSchedulingModule():
-    def __init__(self):
-        f = open('./state_data/open_ai_token.json')
-        self.api_token = json.load(f)['goal_requestor_token']
-        self.client = OpenAI(api_key=self.api_token) 
+    def __init__(self, client):
+        self.client = client
 
 
     def process_user_goal(self, user_message):
@@ -191,5 +190,6 @@ class GenerativeSchedulingModule():
         
 
 if __name__ == "__main__":
-    module = GenerativeSchedulingModule()
+    client = OpenAiClient.get_client()
+    module = GenerativeSchedulingModule(client)
     module.main()
