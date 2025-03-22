@@ -6,6 +6,8 @@ from utils import *
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
 from enum import Enum
+from speech_to_text import SpeechToTextModule
+from intention_classifier import IntentionClassifierModule
 
 app = Flask(__name__)
 
@@ -94,12 +96,12 @@ def add_speech():
     filename = "recording.wav"
     file_path = os.path.join(UPLOAD_FOLDER, filename)
     audio_file.save(file_path)
-    # recording = data['recording']
-    #TODO: Transcribe speech
-    transcribed="I want to run a marathon"
-    #TODO: Get events from ChatGPT. I'm expecting something like this, I need the dateString to be in the below format.
-    events = [{'eventName': 'Short Jog la la la la la la la la la la la la la la la la la la','description':'Only a short jog today to save energy!','dateString':'2025-03-04T21:00:00.000Z'}]
-    return json.dumps(events)
+    transcription = SpeechToTextModule().speech_to_text(file_path)
+    isGoal = IntentionClassifierModule().classify_intentions(transcription)
+    if isGoal:
+        #TODO: Get events from ChatGPT. I'm expecting something like this, I need the dateString to be in the below format.
+        events = [{'eventName': 'Short Jog la la la la la la la la la la la la la la la la la la','description':'Only a short jog today to save energy!','dateString':'2025-03-04T21:00:00.000Z'}]
+        return json.dumps(events)
 
 @app.route('/updateGesture/<update>', methods = ['HEAD'])
 def update_gesture(update):
