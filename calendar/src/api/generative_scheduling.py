@@ -3,6 +3,9 @@ from openai import OpenAI
 from datetime import datetime
 from open_ai_client import OpenAiClient
 from tzlocal import get_localzone
+from speech_to_text import SpeechToTextModule
+from intention_classifier import IntentionClassifierModule
+from utils import *
 
 
 class GenerativeSchedulingModule():
@@ -10,10 +13,11 @@ class GenerativeSchedulingModule():
         self.client = client
 
 
-    def process_user_goal(self, user_message):
-        goal, start_date, end_date = user_message
-        goals = self.generate_goals(goal)
-        scheduled_goals=self.schedule_goals(goals, start_date, end_date)
+    def process_user_goal(self, user_message, user_calendar):
+        goals = self.generate_goals(user_message)
+        scheduled_goals=self.schedule_goals(goals, user_calendar, user_message)
+        print(goals)
+        print(scheduled_goals)
         return scheduled_goals
     
 
@@ -116,7 +120,7 @@ class GenerativeSchedulingModule():
 								"and a message from them providing additional context for when to schedule the events. " +
 								f"Your job is to schedule the new events during free times starting on {start_date} and ending on their desired date if an ending date is provided in the freetext user message. " +
 								"The time the events take up should be estimated by you given the event name and event description. " +
-								"The events should be scheduled evenly spaced out as your client's schedule allows. \n" +
+								"The events should be scheduled evenly spaced out as your client's schedule allows. Do not schedule more than one event a day.\n" +
 								"event_name should contain the goal_name passed in to you\n" +
 								"event_description should contain the goal_description passed in to you \n" +
 								"event_start should contain the start time of the event in RFC 3339 format\n" +
@@ -129,7 +133,7 @@ class GenerativeSchedulingModule():
 						},
 						{
 							"type": "text",
-							"text": user_calendar
+							"text": json.dumps(user_calendar)
 						},
 					]
 				},
@@ -200,11 +204,25 @@ class GenerativeSchedulingModule():
       	)
         return response.choices[0].message.content
 
-    def main(self):
-        pass
+    def main(self, client):
+        audio_filename = "./state_data/recorded_audio.wav"
+        speechRecognitionModule = SpeechToTextModule(client)
+        speechRecognitionModule.record_audio(audio_filename, 10)
+        text = speechRecognitionModule.speech_to_text(audio_filename)
+        print(text)
+        intentions = IntentionClassifierModule(client).classify_intentions(text)
+        print(intentions)
+        intentions_resp = json.loads(intentions)["is_goal"]
+        if intentions_resp:
+            FILEPATH = './state_data/CalData.pkl'
+            CALENDAR_ID = "ee12631861d3d53b1773f88e9b6220add9aa53925b3e4a921eca9dc6f3f17606@group.calendar.google.com"
+            calData = get_data(FILEPATH, CALENDAR_ID)
+            user_calendar = calData.get_events()
+            scheduled_goals = self.process_user_goal(text, user_calendar)
+			
         
 
 if __name__ == "__main__":
-    client = OpenAiClient.get_client()
+    client = OpenAiClient().get_client()
     module = GenerativeSchedulingModule(client)
-    module.main()
+    module.main(client)
