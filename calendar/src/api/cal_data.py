@@ -76,7 +76,19 @@ class CalData:
             new_prompt = self.generate_memory_prompt(month_events, month)
             self.themes[month] = GenerativeThemingModule().generate_theme(new_prompt)
 
+    def add_events(self, events_list, assistant_scheduled=False):
+        """
+        Assumes events_list contains event_description, event_start, event_end, event_id
+        """
+        for event in events_list:
+            month = datetime.fromisoformat(event["event_start"]).month - 1
+            new_event = Event(None, None, event["event_description"], event["event_start"], event["event_end"], assistant_scheduled)
+            month_events = self.events[month]
+            month_events[event["event_id"]] = new_event
 
+    def update_canvas(self, month, canvas):
+        self.canvases[month] = canvas
+    
     def delete_event(self, month, canvas, event_id): 
         #assert(month>=0)
         #assert(month<11)
