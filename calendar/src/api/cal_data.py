@@ -50,8 +50,23 @@ class CalData:
         month_events[event_id] = new_event
         self.canvases[month] = canvas
 
-        new_prompt = self.generate_motivational_prompt(month_events, month)
+        new_prompt = self.generate_prompt(month_events, month)
         self.themes[month] = GenerativeThemingModule().generate_theme(new_prompt)
+
+    def change_theme(self, month, affect):
+        month_events = self.events[month]
+        if affect == "Discouraged":
+            print("Generating Uplifting Theme")
+            new_prompt = self.generate_uplifting_prompt(month_events, month)
+            self.themes[month] = GenerativeThemingModule().generate_theme(new_prompt)
+        elif affect == "Unfocused":
+            print("Generating Motivational Theme")
+            new_prompt = self.generate_motivational_prompt(month_events, month)
+            self.themes[month] = GenerativeThemingModule().generate_theme(new_prompt)
+        elif affect == "Nostalgic":
+            print("Generating Memorable Theme")
+            new_prompt = self.generate_memory_prompt(month_events, month)
+            self.themes[month] = GenerativeThemingModule().generate_theme(new_prompt)
 
 
     def delete_event(self, month, canvas, event_id): 

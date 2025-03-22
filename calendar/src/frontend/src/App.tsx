@@ -135,31 +135,37 @@ function App() {
   
   const onAgentAddEvent = async (formData:any) => {
             try {
+              formData.append("month", dateState.month);
               const response = await axios.post("/addSpeech", formData);
               // Process the response here
-              response.data.forEach((returnedEvent: any) => {
-                const dateString = returnedEvent['dateString'];
-                const date = new Date(dateString);
-                const canvas = canvasRef.current;
-                if (canvas) {
-                  const { x, y } = getPositionFromDate(canvas, dateState, canvHeight, date);
-                  const ctx = canvas.getContext("2d");
-                  if (ctx) {
-                    const text = returnedEvent['eventName'] + "- " + date.toLocaleTimeString("en-US", {
-                      timeZone: "UTC",
-                      hour: "numeric",
-                      hour12: true,
-                    });
-                    const maxCharsPerLine = 30;
-                    const lines = wrapText(text, maxCharsPerLine);
-  
-                    // Animate each line with a staggered fade-in effect
-                    lines.forEach((line, index) => {
-                      fadeInText(ctx, line, x + 10, y + 10 + index * 20, 1000, index * 300);
-                    });
+              if ("monthchanged" in response.data) {
+                setCalTheme(true)
+              } else {
+                response.data.forEach((returnedEvent: any) => {
+                  const dateString = returnedEvent['dateString'];
+                  const date = new Date(dateString);
+                  const canvas = canvasRef.current;
+                  if (canvas) {
+                    const { x, y } = getPositionFromDate(canvas, dateState, canvHeight, date);
+                    const ctx = canvas.getContext("2d");
+                    if (ctx) {
+                      const text = returnedEvent['eventName'] + "- " + date.toLocaleTimeString("en-US", {
+                        timeZone: "UTC",
+                        hour: "numeric",
+                        hour12: true,
+                      });
+                      const maxCharsPerLine = 30;
+                      const lines = wrapText(text, maxCharsPerLine);
+    
+                      // Animate each line with a staggered fade-in effect
+                      lines.forEach((line, index) => {
+                        fadeInText(ctx, line, x + 10, y + 10 + index * 20, 1000, index * 300);
+                      });
+                    }
                   }
-                }
-              });
+                });
+              }
+              
             } catch (error) {
               console.error("Upload failed:", error);
             }

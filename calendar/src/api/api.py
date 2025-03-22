@@ -10,6 +10,9 @@ from speech_to_text import SpeechToTextModule
 from intention_classifier import IntentionClassifierModule
 from tzlocal import get_localzone
 from datetime import datetime
+from open_ai_client import OpenAiClient
+from generative_scheduling import GenerativeSchedulingModule
+from emotion_classifier import EmotionClassifierModule
 
 app = Flask(__name__)
 
@@ -100,16 +103,24 @@ def add_speech():
         return json.dumps({"error": "No audio file found"})
 
     audio_file = request.files["audio"]
+    month = request.form.get("month") 
     UPLOAD_FOLDER = "state_data"
     filename = "recording.wav"
     file_path = os.path.join(UPLOAD_FOLDER, filename)
     audio_file.save(file_path)
-    transcription = SpeechToTextModule().speech_to_text(file_path)
-    isGoal = IntentionClassifierModule().classify_intentions(transcription)
+    client = OpenAiClient.get_client()
+    transcription = SpeechToTextModule(client).speech_to_text(file_path)
+    isGoal = IntentionClassifierModule(client).classify_intentions(transcription)
     if isGoal:
         #TODO: Get events from ChatGPT. I'm expecting something like this, I need the dateString to be in the below format.
         events = [{'eventName': 'Short Jog la la la la la la la la la la la la la la la la la la','description':'Only a short jog today to save energy!','dateString':'2025-03-04T21:00:00.000Z'}]
         return json.dumps(events)
+    else:
+        #TODO: Update theming based on the classified affect of the user's statement
+        emotion = EmotionClassifierModule(client).classify_emotion(transcription)
+        calData.change_theme(month,emotion)
+        return json.dumps({'monthchange':True})
+
 
 @app.route('/updateGesture/<update>', methods = ['HEAD'])
 def update_gesture(update):

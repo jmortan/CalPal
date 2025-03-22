@@ -11,7 +11,7 @@ class GenerativeSchedulingModule():
 
 
     def process_user_goal(self, user_message):
-        goal, start_date, end_date = user_message
+        goal = user_message
         goals = self.generate_goals(goal)
         scheduled_goals=self.schedule_goals(goals, start_date, end_date)
         return scheduled_goals
@@ -99,7 +99,7 @@ class GenerativeSchedulingModule():
 
         return response.choices[0].message
 
-    def schedule_goals(self, goals, end_date):
+    def schedule_goals(self, goalsGPT, end_date):
         start_date = datetime.now(get_localzone()).isoformat()
         response = self.client.chat.completions.create(
         model="gpt-4o",
