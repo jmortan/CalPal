@@ -102,102 +102,103 @@ class GenerativeSchedulingModule():
     def schedule_goals(self, gpt_goals, user_calendar, user_message):
         start_date = datetime.now(get_localzone()).isoformat()
         response = self.client.chat.completions.create(
-        model="gpt-4o",
-        messages=[
-          	{
-				"role": "system",
-				"content": [
-					{
-						"type": "text",
-						"text": (
-							"You are an expert assistant specializing in scheduling events your client wants to put on their calendar. " +
-							"You will receive a list of events with event name and event description, " +
-                            "your client's current calendar containing a list of events they have scheduled with starting and ending times in RFC 3339 format, "+
-                            "and a message from them providing additional context for when to schedule the events. " +
-							f"Your job is to schedule the new events during free times starting on {start_date} and ending on their desired date if an ending date is provided in the freetext user message. " +
-							"The time the events take up should be estimated by you given the event name and event description. " +
-							"The events should be scheduled evenly spaced out as your client's schedule allows. \n" +
-							"event_name should contain the goal_name passed in to you\n" +
-							"event_description should contain the goal_description passed in to you \n" +
-							"event_start should contain the start time of the event in RFC 3339 format\n" +
-							"event_end should contain the end time of the event in RFC 3339 format"
-						)
-					},
-					{
-						"type": "text",
-						"text": gpt_goals
-					},
-					{
-						"type": "text",
-						"text": user_calendar
-					},
-            	]
-          	},
-			{
-				"role": "user",
-				"content": [
-					{
-						"type": "text",
-						"text": user_message
-					}
-				]
-			},
-        ],
-        response_format={
-			"type": "json_schema",
-			"json_schema": {
-			"name": "event_list",
-			"strict": True,
-				"schema": {
-					"type": "object",
-					"properties": {
-						"events": {
-							"type": "array",
-							"description": "A list of events.",
-							"items": {
-								"type": "object",
-								"properties": {
-									"event_name": {
-										"type": "string",
-										"description": "The name of the event."
-									},
-									"event_description": {
-										"type": "string",
-										"description": "The description of the event"
-									},
-									"event_start": {
-										"type": "string",
-										"description": "The time the event starts in RFC 3339 format."
-									},
-									"event_end": {
-										"type": "string",
-										"description": "The time the event ends in RFC 3339 format."
-									}
-								},
-								"required": [
-									"event_name",
-									"event_description",
-									"event_start",
-									"event_end"
-								],
-								"additionalProperties": False
-							}
+			model="gpt-4o",
+			messages=[
+				{
+					"role": "system",
+					"content": [
+						{
+							"type": "text",
+							"text": (
+								"You are an expert assistant specializing in scheduling events your client wants to put on their calendar. " +
+								"You will receive a list of events with event name and event description, " +
+								"your client's current calendar containing a list of events they have scheduled with starting and ending times in RFC 3339 format, "+
+								"and a message from them providing additional context for when to schedule the events. " +
+								f"Your job is to schedule the new events during free times starting on {start_date} and ending on their desired date if an ending date is provided in the freetext user message. " +
+								"The time the events take up should be estimated by you given the event name and event description. " +
+								"The events should be scheduled evenly spaced out as your client's schedule allows. \n" +
+								"event_name should contain the goal_name passed in to you\n" +
+								"event_description should contain the goal_description passed in to you \n" +
+								"event_start should contain the start time of the event in RFC 3339 format\n" +
+								"event_end should contain the end time of the event in RFC 3339 format"
+							)
+						},
+						{
+							"type": "text",
+							"text": gpt_goals
+						},
+						{
+							"type": "text",
+							"text": user_calendar
+						},
+					]
+				},
+				{
+					"role": "user",
+					"content": [
+						{
+							"type": "text",
+							"text": user_message
 						}
-					},
-					"required": [
-						"events"
-					],
-					"additionalProperties": False
+					]
+				},
+			],
+			response_format={
+				"type": "json_schema",
+				"json_schema": {
+				"name": "event_list",
+				"strict": True,
+					"schema": {
+						"type": "object",
+						"properties": {
+							"events": {
+								"type": "array",
+								"description": "A list of events.",
+								"items": {
+									"type": "object",
+									"properties": {
+										"event_name": {
+											"type": "string",
+											"description": "The name of the event."
+										},
+										"event_description": {
+											"type": "string",
+											"description": "The description of the event"
+										},
+										"event_start": {
+											"type": "string",
+											"description": "The time the event starts in RFC 3339 format."
+										},
+										"event_end": {
+											"type": "string",
+											"description": "The time the event ends in RFC 3339 format."
+										}
+									},
+									"required": [
+										"event_name",
+										"event_description",
+										"event_start",
+										"event_end"
+									],
+									"additionalProperties": False
+								}
+							}
+						},
+						"required": [
+							"events"
+						],
+						"additionalProperties": False
+					}
 				}
-			}
-		},
-        temperature=.5,
-        max_completion_tokens=6000,
-        top_p=1,
-        frequency_penalty=0,
-        presence_penalty=0,
-        store=False
-      )
+			},
+			temperature=.5,
+			max_completion_tokens=6000,
+			top_p=1,
+			frequency_penalty=0,
+			presence_penalty=0,
+			store=False
+      	)
+        return response.choices[0].message.content
 
     def main(self):
         pass
