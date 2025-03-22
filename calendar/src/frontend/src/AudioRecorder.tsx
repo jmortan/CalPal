@@ -4,6 +4,18 @@ const AudioRecorder = ({ onUpload }:any) => {
   const [recording, setRecording] = useState(false);
   const mediaRecorderRef = useRef<any>(null);
   const audioChunksRef = useRef<any[]>([]);
+  function convertBlobToBase64(blob: Blob): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        resolve(base64String.split(',')[1]); // Remove the "data:audio/mp3;base64," prefix
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(blob); // Read the Blob as a base64 data URL
+    });
+  }
+  
 
   const handleClick = async () => {
     if (!recording) {
@@ -20,13 +32,11 @@ const AudioRecorder = ({ onUpload }:any) => {
         };
 
         mediaRecorderRef.current.onstop = async () => {
-          const audioBlob = new Blob(audioChunksRef.current, { type: "audio/wav" });
-          console.log("Final Blob size:", audioBlob.size);
-          const formData = new FormData();
-          formData.append("audio", audioBlob, "recording.wav");
+          const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+          const audioFile = new File([audioBlob], "recording.webm", { type: "audio/webm" });
           
           if (onUpload) {
-            onUpload(formData);
+            onUpload(audioFile);
           }
         };
 

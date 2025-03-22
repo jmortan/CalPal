@@ -133,43 +133,39 @@ function App() {
 
   
   
-  const onAgentAddEvent = async (formData:any) => {
-            try {
-              formData.append("month", dateState.month);
-              const response = await axios.post("/addSpeech", formData);
-              // Process the response here
-              if ("monthchanged" in response.data) {
-                setCalTheme(true)
-              } else {
-                response.data.forEach((returnedEvent: any) => {
-                  const dateString = returnedEvent['dateString'];
-                  const date = new Date(dateString);
-                  const canvas = canvasRef.current;
-                  if (canvas) {
-                    const { x, y } = getPositionFromDate(canvas, dateState, canvHeight, date);
-                    const ctx = canvas.getContext("2d");
-                    if (ctx) {
-                      const text = returnedEvent['eventName'] + "- " + date.toLocaleTimeString("en-US", {
-                        timeZone: "UTC",
-                        hour: "numeric",
-                        hour12: true,
-                      });
-                      const maxCharsPerLine = 30;
-                      const lines = wrapText(text, maxCharsPerLine);
-    
-                      // Animate each line with a staggered fade-in effect
-                      lines.forEach((line, index) => {
-                        fadeInText(ctx, line, x + 10, y + 10 + index * 20, 1000, index * 300);
-                      });
-                    }
-                  }
+  const onAgentAddEvent = async (audioFile:any) => {
+        const formData = new FormData();
+        formData.append("file", audioFile); // Attach audio file
+        formData.append("month", dateState.month)
+        const addSpeechResponse = await axios.post("/addSpeech", formData);
+        if ("monthchange" in addSpeechResponse.data) {
+          setCalTheme(true)
+
+        } else {
+          addSpeechResponse.data.forEach((returnedEvent: any) => {
+            const dateString = returnedEvent['event_start'];
+            const date = new Date(dateString);
+            const canvas = canvasRef.current;
+            if (canvas) {
+              const { x, y } = getPositionFromDate(canvas, dateState, canvHeight, date);
+              const ctx = canvas.getContext("2d");
+              if (ctx) {
+                const text = returnedEvent['event_description'] + "- " + date.toLocaleTimeString("en-US", {
+                  timeZone: "UTC",
+                  hour: "numeric",
+                  hour12: true,
+                });
+                const maxCharsPerLine = 30;
+                const lines = wrapText(text, maxCharsPerLine);
+
+                // Animate each line with a staggered fade-in effect
+                lines.forEach((line, index) => {
+                  fadeInText(ctx, line, x + 10, y + 10 + index * 20, 1000, index * 300);
                 });
               }
-              
-            } catch (error) {
-              console.error("Upload failed:", error);
             }
-         
+          });
+        }
   };
   
   

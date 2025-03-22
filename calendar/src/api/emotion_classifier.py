@@ -1,9 +1,4 @@
-import json
-from openai import OpenAI
-from open_ai_client import OpenAiClient
-
-
-class IntentionClassifierModule():
+class EmotionClassifierModule():
     def __init__(self, client):
         self.client = client
     
@@ -17,6 +12,15 @@ class IntentionClassifierModule():
                 {
                 "type": "text",
                 "text": "Given the following user input, classify their current emotional state into one of three categories: (1) Low energy / discouraged, (2) Unfocused / stagnant, or (3) Nostalgic / introspective. Consider their tone, word choice, and emotional cues. Return only the category that best matches their state."
+                }
+            ]
+            },
+             {
+            "role": "user",
+            "content": [
+                {
+                "type": "text",
+                "text": user_message
                 }
             ]
             }
@@ -60,8 +64,8 @@ class IntentionClassifierModule():
         )
         
         
-        return response.choices[0].message
+        return response.choices[0].message.content
         
 
 if __name__ == "__main__":
-    pass
+    print("Hello")

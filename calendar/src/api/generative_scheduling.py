@@ -11,10 +11,14 @@ class GenerativeSchedulingModule():
 
 
     def process_user_goal(self, user_message, user_calendar):
-        goals = self.generate_goals(user_message)
+        goal = user_message
+        goals = self.generate_goals(goal)
+        print(f"Generated goals: {goals}", flush=True)
         scheduled_goals=self.schedule_goals(goals, user_calendar, user_message)
+        print(f"Generated schedule: {scheduled_goals}", flush=True)
         return scheduled_goals
     
+
     def generate_goals(self, user_message):
         response = self.client.chat.completions.create(
 			model="gpt-4o",
@@ -95,7 +99,7 @@ class GenerativeSchedulingModule():
 			store=False
         )
 
-    	return response.choices[0].message.content
+        return response.choices[0].message.content
 
     def schedule_goals(self, gpt_goals, user_calendar, user_message):
         start_date = datetime.now(get_localzone()).isoformat()
@@ -195,10 +199,8 @@ class GenerativeSchedulingModule():
 			frequency_penalty=0,
 			presence_penalty=0,
 			store=False
-    	)
-    	return response.choices[0].message.content
-        
-      
+      	)
+        return response.choices[0].message.content
 
     def main(self):
         pass
