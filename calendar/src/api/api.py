@@ -77,10 +77,10 @@ def add_event():
     img = base64_to_cv2_image(canvas_data)
     cropped = crop_canvas(img, coord1, coord2)
     #cv2.imwrite("testing.png", cropped)
-    event_name = canvas_handwriting_detection(cropped,  visionCreds) 
-    if (event_name=="No text detected"):
+    event_writing = canvas_handwriting_detection(cropped,  visionCreds) 
+    if (event_writing=="No text detected"):
         return Response("Not detected", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    event_query = event_name + " on " + dateString
+    event_query = event_writing + " on " + dateString
     created_event = service.events().quickAdd(calendarId = calData.get_cal_id(), text=event_query).execute()
 
     # Set up time defaults for all day events
@@ -91,6 +91,8 @@ def add_event():
 
     event_start = created_event.get("start", {"dateTime": start_of_day}).get("dateTime")
     event_end = created_event.get("end", {"dateTime": end_of_day}).get("dateTime")
+
+    event_name = created_event["summary"]
 
     calData.add_event(month, canvas_data, coord1, coord2, created_event['id'], event_name, event_start, event_end, False)
     with open(FILEPATH, 'wb') as file:
