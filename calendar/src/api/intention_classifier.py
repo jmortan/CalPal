@@ -62,7 +62,7 @@ class IntentionClassifierModule():
             presence_penalty=0,
             store=False
         )
-        return response.choices[0].message
+        return response.choices[0].message.content
     
     def main(self):
         audio_filename = "./state_data/recorded_audio.wav"

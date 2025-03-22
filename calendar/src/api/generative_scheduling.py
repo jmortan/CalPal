@@ -97,9 +97,9 @@ class GenerativeSchedulingModule():
 			store=False
         )
 
-        return response.choices[0].message
+        return response.choices[0].message.content
 
-    def schedule_goals(self, goals, end_date):
+    def schedule_goals(self, gpt_goals, user_calendar, user_message):
         start_date = datetime.now(get_localzone()).isoformat()
         response = self.client.chat.completions.create(
         model="gpt-4o",
@@ -107,28 +107,41 @@ class GenerativeSchedulingModule():
           	{
 				"role": "system",
 				"content": [
-				{
-					"type": "text",
-					"text": (
-						"You are an expert assistant specializing in scheduling events your client wants to put on their calendar. " +
-						"You will receive a list of events with event name and event description as well as your client's current calendar. " +
-						f"Your job is to schedule the new events during free times starting on {start_date} and ending on {end_date} if an ending date is provided. " +
-						"The time the events take up should be estimated by you given the event name and event description. " +
-						"The events should be scheduled evenly spaced out as your client's schedule allows. \n" +
-						"event_name should contain the goal_name passed in to you\n" +
-						"event_description should contain the goal_description passed in to you \n" +
-						"event_start should contain the start time of the event in RFC 3339 format\n" +
-						"event_end should contain the end time of the event in RFC 3339 format"
-					)
-				},
-				{
-					# Pass in user goals
-				},
-				{
-					# Pass in user calendar
-				}
+					{
+						"type": "text",
+						"text": (
+							"You are an expert assistant specializing in scheduling events your client wants to put on their calendar. " +
+							"You will receive a list of events with event name and event description, " +
+                            "your client's current calendar containing a list of events they have scheduled with starting and ending times in RFC 3339 format, "+
+                            "and a message from them providing additional context for when to schedule the events. " +
+							f"Your job is to schedule the new events during free times starting on {start_date} and ending on their desired date if an ending date is provided in the freetext user message. " +
+							"The time the events take up should be estimated by you given the event name and event description. " +
+							"The events should be scheduled evenly spaced out as your client's schedule allows. \n" +
+							"event_name should contain the goal_name passed in to you\n" +
+							"event_description should contain the goal_description passed in to you \n" +
+							"event_start should contain the start time of the event in RFC 3339 format\n" +
+							"event_end should contain the end time of the event in RFC 3339 format"
+						)
+					},
+					{
+						"type": "text",
+						"text": gpt_goals
+					},
+					{
+						"type": "text",
+						"text": user_calendar
+					},
             	]
           	},
+			{
+				"role": "user",
+				"content": [
+					{
+						"type": "text",
+						"text": user_message
+					}
+				]
+			},
         ],
         response_format={
 			"type": "json_schema",
