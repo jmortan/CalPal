@@ -126,6 +126,7 @@ def add_speech():
         user_events = calData.get_events()
         scheduled_events = GenerativeSchedulingModule(client).process_user_goal(transcription, user_events)
         events = json.loads(scheduled_events)["events"]
+        months = set()
         for event in events: 
             event_name = event["event_description"]
             event_start = event["event_start"]
@@ -143,8 +144,9 @@ def add_speech():
             event["event_id"] = gcal_event["id"]
             event_month = datetime.fromisoformat(event_start).month - 1
             calData.add_event(event_month, None, None, event['id'], event_name, event_start, event_end, True)
-        calData.generate_theme(month)
-        
+            months.add(event_month)
+        for event_month in months:
+            calData.generate_theme(event_month)
         return json.dumps(events)
     else:
         print("Did not detect goal")
