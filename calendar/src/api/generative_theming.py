@@ -30,18 +30,18 @@ class GenerativeThemingModule():
     
     def generate_uplifting_prompt(self, month_events,month):
         events = ', '.join([event.name for event in month_events.values()])
-        new_prompt = "A serene landscape for " + self.months[month] + ", symbolizing resilience with subtle nods to " + events + ". The scene feels hopeful and peaceful. The image you generate should NOT contain any text.""
+        new_prompt = "A serene landscape for " + self.months[month] + ", symbolizing resilience with subtle nods to " + events + ". The scene feels hopeful and peaceful. The image you generate should NOT contain any text."
         return new_prompt
     
     def generate_motivational_prompt(self, month_events,month):
         events = ', '.join([event.name for event in month_events.values()])
-        new_prompt = "A dynamic and inspiring scene for " + self.months[month] + ", showing progress and determination with subtle nods to " + events + ". The colors are bold and energetic. The image you generate should NOT contain any text.""
+        new_prompt = "A dynamic and inspiring scene for " + self.months[month] + ", showing progress and determination with subtle nods to " + events + ". The colors are bold and energetic. The image you generate should NOT contain any text."
         return new_prompt
     
     def generate_memory_prompt(self, month_events,month):
         events = ', '.join([event.name for event in month_events.values()])
         print(events)
-        new_prompt = "A dreamlike landscape for " + self.months[month] + ", subtly incorporating hints of upcoming events, including " + events + ". The scene is immersive and slightly surreal. The image you generate should NOT contain any text.""
+        new_prompt = "A dreamlike landscape for " + self.months[month] + ", subtly incorporating hints of upcoming events, including " + events + ". The scene is immersive and slightly surreal. The image you generate should NOT contain any text."
         return new_prompt
 
     def generate_prompt(self, month, events):
