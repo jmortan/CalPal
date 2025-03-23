@@ -22,7 +22,7 @@ class CalData:
         for ii in range(len(self.months)): 
             self.canvases[ii] = canvas
             prompt = "A day in " + self.months[ii] + ". The image you generate should NOT contain any text."
-            self.themes[ii] = self.themingModule.generate_theme(prompt)
+            self.themes[ii] = GenerativeThemingModule().generate_theme(prompt)
             self.events[ii] = {}
 
         self.id = id
@@ -32,8 +32,9 @@ class CalData:
         month_events = self.events[month]
         events = ', '.join([event.name for event in month_events.values()])
         month_name = self.months[month]
-        new_prompt = self.themingModule.determine_prompt_from_affect(affect, month_name, events)
-        self.themes[month] = self.themingModule.generate_theme(new_prompt)
+        themingModule = GenerativeThemingModule()
+        new_prompt = themingModule.determine_prompt_from_affect(affect, month_name, events)
+        self.themes[month] = themingModule.generate_theme(new_prompt)
         
 
     def add_event(self, month, coord1, coord2, event_id, event_name, event_start, event_end, assistant_scheduled=False):
