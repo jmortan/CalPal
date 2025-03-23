@@ -6,8 +6,15 @@ from utils import *
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
 from enum import Enum
+from speech_to_text import SpeechToTextModule
+from intention_classifier import IntentionClassifierModule
 from tzlocal import get_localzone
 from datetime import datetime
+from open_ai_client import OpenAiClient
+from generative_scheduling import GenerativeSchedulingModule
+from emotion_classifier import EmotionClassifierModule
+import base64
+from pydub import AudioSegment
 
 app = Flask(__name__)
 
@@ -16,6 +23,7 @@ TOKENPATH = './state_data/token.pickle'
 CREDPATH = './state_data/credentials.json'
 VISIONCREDPATH = './state_data/visionCredentials.json'
 CALENDAR_ID = "ee12631861d3d53b1773f88e9b6220add9aa53925b3e4a921eca9dc6f3f17606@group.calendar.google.com"
+UPLOAD_FOLDER = 'state_data'
 
 creds = get_creds(TOKENPATH, CREDPATH)
 visionCreds = service_account.Credentials.from_service_account_file(VISIONCREDPATH)
@@ -24,6 +32,10 @@ service = build('calendar', 'v3', credentials=creds)
 statuses = Enum('Statuses', ['Forward', 'Backward', 'Empty'])
 
 flipped = statuses.Empty
+
+def convert_to_wav(input_file, output_file):
+    audio = AudioSegment.from_file(input_file)
+    audio.export(output_file, format="wav")
 
 @app.route('/monthEvents', methods = ['GET'])
 def get_month(): 
@@ -96,13 +108,33 @@ def add_event():
     
 @app.route('/addSpeech', methods=['POST'])
 def add_speech():
-    data = request.json
-    recording = data['recording']
-    #TODO: Transcribe speech
-    transcribed="I want to run a marathon"
-    #TODO: Get events from ChatGPT. I'm expecting something like this, I need the dateString to be in the below format.
-    events = [{'eventName': 'Short Jog la la la la la la la la la la la la la la la la la la - 9 PM','description':'Only a short jog today to save energy!','dateString':'Mar 04 2025'}]
-    return json.dumps(events)
+    file = request.files.get('file')
+    filename="recording.webm"
+    file_path = os.path.join(UPLOAD_FOLDER, filename)
+    out_file_path = os.path.join(UPLOAD_FOLDER, "recording.wav")
+    file.save(file_path)
+    convert_to_wav(file_path, out_file_path)
+    client = OpenAiClient().get_client()
+    transcription= SpeechToTextModule(client).speech_to_text(out_file_path)
+    month = request.form.get("month")
+    print(f"Audio Transcribed: {transcription}")
+    
+    isGoalString = IntentionClassifierModule(client).classify_intentions(transcription)
+    isGoal = json.loads(isGoalString)["is_goal"]
+    if isGoal:
+        #TODO: Get events from ChatGPT. I'm expecting something like this, I need the dateString to be in the below format.
+        print("Detected Goal")
+        user_events = calData.get_events()
+        scheduled_events = GenerativeSchedulingModule(client).process_user_goal(transcription, user_events)
+        events = json.loads(scheduled_events)["events"]
+        return json.dumps(events)
+    else:
+        print("Did not detect goal")
+        #TODO: Update theming based on the classified affect of the user's statement
+        emotion_string = EmotionClassifierModule(client).classify_emotion(transcription)
+        emotion = json.loads(emotion_string)["classified_emotion"]
+        calData.change_theme(int(month),emotion)
+        return json.dumps({'monthchange':True})
 
 @app.route('/updateGesture/<update>', methods = ['HEAD'])
 def update_gesture(update):

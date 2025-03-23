@@ -19,6 +19,7 @@ class CalData:
         self.themes = {}
         self.events = {}
 
+
         for ii in range(len(self.months)): 
             self.canvases[ii] = canvas
             prompt = "A day in " + self.months[ii] + " in the style of a painting"
@@ -26,10 +27,27 @@ class CalData:
             self.events[ii] = {}
 
         self.id = id
+    def generate_uplifting_prompt(self, month_events,month):
+        events = ', '.join([event.name for event in month_events.values()])
+        new_prompt = "A serene landscape for " + self.months[month] + ", symbolizing resilience with subtle nods to " + events + " in the style of a painting. The scene feels hopeful and peaceful."
+        return new_prompt
+    
+    def generate_motivational_prompt(self, month_events,month):
+        events = ', '.join([event.name for event in month_events.values()])
+        new_prompt = "A dynamic and inspiring scene for " + self.months[month] + ", showing progress and determination with subtle nods to " + events + " in the style of a painting. The colors are bold and energetic."
+        return new_prompt
+    
+    def generate_memory_prompt(self, month_events,month):
+        events = ', '.join([event.name for event in month_events.values()])
+        print(events)
+        new_prompt = "A dreamlike landscape for " + self.months[month] + ", subtly incorporating hints of upcoming events, including " + events + ", in the style of a painting. The scene is immersive and slightly surreal."
+        return new_prompt
+
 
     def generate_prompt(self, month_events, month):
         events = ', '.join([event.name for event in month_events.values()])
         new_prompt = "A day in " + self.months[month] + " with " + events + "in the style of a painting"
+        print(new_prompt)
         return new_prompt
         
     def add_event(self, month, canvas, coord1, coord2, event_id, event_name, event_start, event_end, assistant_scheduled=False):
@@ -42,6 +60,21 @@ class CalData:
 
         new_prompt = self.generate_prompt(month_events, month)
         self.themes[month] = GenerativeThemingModule().generate_theme(new_prompt)
+
+    def change_theme(self, month, affect):
+        month_events = self.events[month]
+        if affect == "Discouraged":
+            print("Generating Uplifting Theme")
+            new_prompt = self.generate_uplifting_prompt(month_events, month)
+            self.themes[month] = GenerativeThemingModule().generate_theme(new_prompt)
+        elif affect == "Unfocused":
+            print("Generating Motivational Theme")
+            new_prompt = self.generate_motivational_prompt(month_events, month)
+            self.themes[month] = GenerativeThemingModule().generate_theme(new_prompt)
+        elif affect == "Nostalgic":
+            print("Generating Memorable Theme")
+            new_prompt = self.generate_memory_prompt(month_events, month)
+            self.themes[month] = GenerativeThemingModule().generate_theme(new_prompt)
 
     def add_events(self, events_list, assistant_scheduled=False):
         """

@@ -17,7 +17,22 @@
   position: absolute;
   top: 4vh;
   padding: 6px;
-  left: 87.1svw;
+  left: 76.1svw;
+  font-family: "Rosarivo", cursive;
+  font-weight: bold;
+  border-radius: 5px;
+  color:black;
+  background-color: white;
+  opacity: 0.9;
+  border: 1px solid #ccc;
+  font-size: large;
+}
+
+.testModeButton{
+  position: absolute;
+  top: 4vh;
+  padding: 6px;
+  left: 50.1svw;
   font-family: "Rosarivo", cursive;
   font-weight: bold;
   border-radius: 5px;
@@ -32,7 +47,7 @@
   position: absolute;
   top: 4vh;
   padding: 6px;
-  left: 84vw;
+  left: 70vw;
   font-family: "Rosarivo", cursive;
   font-weight: bold;
   border-radius: 5px;
@@ -47,7 +62,7 @@
   position: absolute;
   top: 4vh;
   padding: 6px;
-  left: 90.7vw;
+  left: 86.7vw;
   font-family: "Rosarivo", cursive;
   font-weight: bold;
   border-radius: 5px;

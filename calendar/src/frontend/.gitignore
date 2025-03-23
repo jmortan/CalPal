@@ -24,4 +24,5 @@ yarn-error.log*
 
 #Api
 venv
+open_ai_token.json
 __pycache__

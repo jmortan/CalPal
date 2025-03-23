@@ -64,10 +64,10 @@ class IntentionClassifierModule():
         )
         return response.choices[0].message.content
     
-    def main(self):
-        audio_filename = "./state_data/recorded_audio.wav"
-        speechRecognitionModule = SpeechToTextModule()
-        speechRecognitionModule.record_audio(audio_filename, 10)
+    def main(self, client):
+        audio_filename = "./state_data/recording.webm"
+        speechRecognitionModule = SpeechToTextModule(client)
+        # speechRecognitionModule.record_audio(audio_filename, 10)
         text = speechRecognitionModule.speech_to_text(audio_filename)
         print(text)
         intentions = self.classify_intentions(text)
@@ -77,4 +77,4 @@ class IntentionClassifierModule():
 if __name__ == "__main__":
     client = OpenAiClient().get_client()
     module = IntentionClassifierModule(client)
-    module.main()
+    module.main(client)
