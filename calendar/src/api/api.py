@@ -101,7 +101,9 @@ def add_event():
 
     event_name = created_event["summary"]
 
-    calData.add_event(month, canvas_data, coord1, coord2, created_event['id'], event_name, event_start, event_end, False)
+    calData.add_event(month, coord1, coord2, created_event['id'], event_name, event_start, event_end, False)
+    calData.update_canvas(month, canvas_data)
+    calData.generate_theme(month)
     with open(FILEPATH, 'wb') as file:
             pickle.dump(calData, file)
     return Response(created_event['id'], status = status.HTTP_200_OK)
@@ -122,15 +124,34 @@ def add_speech():
     isGoalString = IntentionClassifierModule(client).classify_intentions(transcription)
     isGoal = json.loads(isGoalString)["is_goal"]
     if isGoal:
-        #TODO: Get events from ChatGPT. I'm expecting something like this, I need the dateString to be in the below format.
+        # Get events from ChatGPT. I'm expecting something like this, I need the dateString to be in the below format.
         print("Detected Goal")
         user_events = calData.get_events()
         scheduled_events = GenerativeSchedulingModule(client).process_user_goal(transcription, user_events)
         events = json.loads(scheduled_events)["events"]
+        for event in events: 
+            event_name = event["event_description"]
+            event_start = event["event_start"]
+            event_end = event["event_end"]
+            gcal_event = {
+                'summary': event_name,
+                'start': {
+                    'dateTime': event_start,
+                },
+                'end': {
+                    'dateTime': event_end,
+                },
+            }
+            gcal_event = service.events().insert(calendarId='primary', body=gcal_event).execute()
+            event["event_id"] = gcal_event["id"]
+            event_month = datetime.fromisoformat(event_start).month - 1
+            calData.add_event(event_month, None, None, event['id'], event_name, event_start, event_end, True)
+        calData.generate_theme(month)
+        
         return json.dumps(events)
     else:
         print("Did not detect goal")
-        #TODO: Update theming based on the classified affect of the user's statement
+        # Update theming based on the classified affect of the user's statement
         emotion_string = EmotionClassifierModule(client).classify_emotion(transcription)
         emotion = json.loads(emotion_string)["classified_emotion"]
         calData.change_theme(int(month),emotion)

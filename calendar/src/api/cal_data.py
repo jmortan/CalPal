@@ -27,6 +27,7 @@ class CalData:
             self.events[ii] = {}
 
         self.id = id
+
     def generate_uplifting_prompt(self, month_events,month):
         events = ', '.join([event.name for event in month_events.values()])
         new_prompt = "A serene landscape for " + self.months[month] + ", symbolizing resilience with subtle nods to " + events + " in the style of a painting. The scene feels hopeful and peaceful."
@@ -43,23 +44,26 @@ class CalData:
         new_prompt = "A dreamlike landscape for " + self.months[month] + ", subtly incorporating hints of upcoming events, including " + events + ", in the style of a painting. The scene is immersive and slightly surreal."
         return new_prompt
 
-
     def generate_prompt(self, month_events, month):
         events = ', '.join([event.name for event in month_events.values()])
         new_prompt = "A day in " + self.months[month] + " with " + events + "in the style of a painting"
         print(new_prompt)
         return new_prompt
         
-    def add_event(self, month, canvas, coord1, coord2, event_id, event_name, event_start, event_end, assistant_scheduled=False):
+    def add_event(self, month, coord1, coord2, event_id, event_name, event_start, event_end, assistant_scheduled=False):
         #assert(month>=0)
         #assert(month<11)
         new_event = Event(coord1, coord2, event_name, event_start, event_end, assistant_scheduled)
         month_events = self.events[month]
         month_events[event_id] = new_event
-        self.canvases[month] = canvas
 
+    def generate_theme(self, month):
+        month_events = self.events[month]
         new_prompt = self.generate_prompt(month_events, month)
         self.themes[month] = GenerativeThemingModule().generate_theme(new_prompt)
+
+    def update_canvas(self, month, canvas):
+        self.canvases[month] = canvas
 
     def change_theme(self, month, affect):
         month_events = self.events[month]
@@ -75,21 +79,6 @@ class CalData:
             print("Generating Memorable Theme")
             new_prompt = self.generate_memory_prompt(month_events, month)
             self.themes[month] = GenerativeThemingModule().generate_theme(new_prompt)
-
-    def add_events(self, events_list, assistant_scheduled=False):
-        """
-        Assumes events_list contains event_description, event_start, event_end, event_id
-        Add events without updating the canvas TODO: refactor add event to not update theme and this can become a part of it..
-        TODO: also make the gen theming model handle everything else please!!! 
-        """
-        for event in events_list:
-            month = datetime.fromisoformat(event["event_start"]).month - 1
-            new_event = Event(None, None, event["event_description"], event["event_start"], event["event_end"], assistant_scheduled)
-            month_events = self.events[month]
-            month_events[event["event_id"]] = new_event
-
-    def update_canvas(self, month, canvas):
-        self.canvases[month] = canvas
     
     def delete_event(self, month, canvas, event_id): 
         #assert(month>=0)
