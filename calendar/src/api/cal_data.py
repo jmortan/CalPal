@@ -46,6 +46,8 @@ class CalData:
     def add_events(self, events_list, assistant_scheduled=False):
         """
         Assumes events_list contains event_description, event_start, event_end, event_id
+        Add events without updating the canvas TODO: refactor add event to not update theme and this can become a part of it..
+        TODO: also make the gen theming model handle everything else please!!! 
         """
         for event in events_list:
             month = datetime.fromisoformat(event["event_start"]).month - 1
