@@ -106,7 +106,7 @@ def add_event():
             pickle.dump(calData, file)
     return Response(created_event['id'], status = status.HTTP_200_OK)
 
-  
+
 @app.route('/processSpeech', methods=['POST'])
 def process_speech():
     file = request.files.get('file')
@@ -147,7 +147,7 @@ def add_events():
     canvas = data["canvas"]
     month = data["month"]
     for event in events: 
-        event_name = event["event_description"]
+        event_name = event["event_name"] + event["event_description"]
         event_start = event["event_start"]
         event_end = event["event_end"]
         coord1, coord2 = event["bbox"]
@@ -160,7 +160,7 @@ def add_events():
                 'dateTime': event_end,
             },
         }
-        gcal_event = service.events().insert(calendarId='primary', body=gcal_event).execute()
+        gcal_event = service.events().insert(calendarId=CALENDAR_ID, body=gcal_event).execute()
         event["event_id"] = gcal_event["id"]
         event_month = datetime.fromisoformat(event_start).month - 1
         calData.add_event(event_month, coord1, coord2, event['event_id'], event_name, event_start, event_end, True)

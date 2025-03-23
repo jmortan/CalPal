@@ -56,7 +56,7 @@ class GenerativeThemingModule():
         if len(nparr) == 0: 
             raise Exception("Issue generating stable diffusion") 
         img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-        cv2.imwrite(f"testing_.png", img)
+        cv2.imwrite(f"testing.png", img)
         resized = cv2.resize(img,(301,172))
         mirrored = cv2.hconcat([resized, cv2.flip(resized.copy(), 1)])
         imgBytes = cv2.imencode(".png", mirrored)[1]
