@@ -5,7 +5,7 @@ from tzlocal import get_localzone
 
 
 class CalData:
-    def __init__(self, canvas, months, id):
+    def __init__(self, canvas, id):
         """
             self.events is a dictionary where each key represents a month of the calendar and each value is 
             another dictionary mapping an event_id to an an event that occurs in month month 
@@ -13,7 +13,6 @@ class CalData:
         #Maps months to their canvas elements
         self.months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 
                                       'September', 'October', 'November', 'December']
-        self.themingModule = GenerativeThemingModule()
 
         self.canvases = {}
         self.themes = {}

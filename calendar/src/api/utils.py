@@ -22,7 +22,7 @@ def get_data(filepath, calendar_id):
         sample_string_bytes = sample_string.encode("ascii") 
         
         encoded_string = base64.b64encode(sample_string_bytes) 
-        calData = CalData(encoded_string, 12, calendar_id)
+        calData = CalData(encoded_string, calendar_id)
 
         with open(filepath, 'wb') as inp:
             pickle.dump(calData, inp)
