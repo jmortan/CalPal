@@ -192,7 +192,7 @@ function App() {
                 if(data==="Not detected"){
                     let ctx = canvas.getContext('2d');
                     ctx?.clearRect(bboxFormat[0][0]-5,bboxFormat[1][1]-5,bboxFormat[1][0] - bboxFormat[0][0]+10,bboxFormat[0][1] - bboxFormat[1][1]+10);
-                    window.alert("Failed to recongize text, please try again!")    
+                    window.alert("Failed to recognize text, please try again!")    
                 } else if (data) {
                     let months={...monthEvents};
                     months[data]=bboxFormat

@@ -72,7 +72,8 @@ def modify_event():
     
     except: 
         return Response("Unable to delete event", status = status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
+
+  
 @app.route('/addEvent', methods=['POST'])
 def add_event():
     data = request.json
@@ -104,7 +105,8 @@ def add_event():
     with open(FILEPATH, 'wb') as file:
             pickle.dump(calData, file)
     return Response(created_event['id'], status = status.HTTP_200_OK)
-    
+
+  
 @app.route('/processSpeech', methods=['POST'])
 def process_speech():
     file = request.files.get('file')
@@ -137,6 +139,7 @@ def process_speech():
             pickle.dump(calData, file)
         return json.dumps({'monthchange':True})
 
+
 @app.route('/addAiEvents', methods=['POST'])
 def add_events():
     data = request.json
@@ -168,6 +171,7 @@ def add_events():
     calData.update_canvas(month, canvas)
     with open(FILEPATH, 'wb') as file:
         pickle.dump(calData, file)
+
 
 @app.route('/updateGesture/<update>', methods = ['HEAD'])
 def update_gesture(update):

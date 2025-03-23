@@ -30,22 +30,22 @@ class GenerativeThemingModule():
     
     def generate_uplifting_prompt(self, month_events,month):
         events = ', '.join([event.name for event in month_events.values()])
-        new_prompt = "A serene landscape for " + self.months[month] + ", symbolizing resilience with subtle nods to " + events + " in the style of a painting. The scene feels hopeful and peaceful."
+        new_prompt = "A serene landscape for " + self.months[month] + ", symbolizing resilience with subtle nods to " + events + ". The scene feels hopeful and peaceful. The image you generate should NOT contain any text.""
         return new_prompt
     
     def generate_motivational_prompt(self, month_events,month):
         events = ', '.join([event.name for event in month_events.values()])
-        new_prompt = "A dynamic and inspiring scene for " + self.months[month] + ", showing progress and determination with subtle nods to " + events + " in the style of a painting. The colors are bold and energetic."
+        new_prompt = "A dynamic and inspiring scene for " + self.months[month] + ", showing progress and determination with subtle nods to " + events + ". The colors are bold and energetic. The image you generate should NOT contain any text.""
         return new_prompt
     
     def generate_memory_prompt(self, month_events,month):
         events = ', '.join([event.name for event in month_events.values()])
         print(events)
-        new_prompt = "A dreamlike landscape for " + self.months[month] + ", subtly incorporating hints of upcoming events, including " + events + ", in the style of a painting. The scene is immersive and slightly surreal."
+        new_prompt = "A dreamlike landscape for " + self.months[month] + ", subtly incorporating hints of upcoming events, including " + events + ". The scene is immersive and slightly surreal. The image you generate should NOT contain any text.""
         return new_prompt
 
     def generate_prompt(self, month, events):
-        new_prompt = "A day in " + month + " with " + events + "in the style of a painting"
+        new_prompt = "A day in " + month + " with " + events + ". The image you generate should NOT contain any text."
         return new_prompt
 
     def generate_theme(self, prompt):
