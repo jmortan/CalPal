@@ -27,6 +27,26 @@ class GenerativeThemingModule():
             n=1,
         )
         return response.data[0].b64_json
+    
+    def generate_uplifting_prompt(self, month_events,month):
+        events = ', '.join([event.name for event in month_events.values()])
+        new_prompt = "A serene landscape for " + self.months[month] + ", symbolizing resilience with subtle nods to " + events + " in the style of a painting. The scene feels hopeful and peaceful."
+        return new_prompt
+    
+    def generate_motivational_prompt(self, month_events,month):
+        events = ', '.join([event.name for event in month_events.values()])
+        new_prompt = "A dynamic and inspiring scene for " + self.months[month] + ", showing progress and determination with subtle nods to " + events + " in the style of a painting. The colors are bold and energetic."
+        return new_prompt
+    
+    def generate_memory_prompt(self, month_events,month):
+        events = ', '.join([event.name for event in month_events.values()])
+        print(events)
+        new_prompt = "A dreamlike landscape for " + self.months[month] + ", subtly incorporating hints of upcoming events, including " + events + ", in the style of a painting. The scene is immersive and slightly surreal."
+        return new_prompt
+
+    def generate_prompt(self, month, events):
+        new_prompt = "A day in " + month + " with " + events + "in the style of a painting"
+        return new_prompt
 
     def generate_theme(self, prompt):
         images = self.query(prompt)
@@ -42,6 +62,23 @@ class GenerativeThemingModule():
         imgBytes = cv2.imencode(".png", mirrored)[1]
         return imgBytes.tobytes()
     
+    def determine_prompt_from_affect(self, affect, month, events):
+        if affect == "Discouraged":
+            print("Generating Uplifting Theme")
+            new_prompt = self.generate_uplifting_prompt(month, events)
+            self.themes[month] = self.themingModule.generate_theme(new_prompt)
+        elif affect == "Unfocused":
+            print("Generating Motivational Theme")
+            new_prompt = self.generate_motivational_prompt(month, events)
+            self.themes[month] = GenerativeThemingModule().generate_theme(new_prompt)
+        elif affect == "Nostalgic":
+            print("Generating Memorable Theme")
+            new_prompt = self.generate_memory_prompt(month, events)
+            self.themes[month] = GenerativeThemingModule().generate_theme(new_prompt)
+        else:
+            new_prompt = self.generate_prompt(month, events)
+        return new_prompt
+
     def main(self):
         image_bytes = self.generate_theme("Devin and Jenny coding")
         nparr = np.frombuffer(image_bytes, np.uint8)

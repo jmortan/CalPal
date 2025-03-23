@@ -9,6 +9,8 @@ from google.cloud import vision
 from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 
+from pydub import AudioSegment
+
 def get_data(filepath, calendar_id):
     calData = None
     if os.path.exists(filepath):
@@ -76,3 +78,7 @@ def crop_canvas(img, coord1, coord2):
     print(img.shape)
     crop_img = img[top:bottom, left:right].copy()
     return crop_img
+
+def convert_to_wav(input_file, output_file):
+    audio = AudioSegment.from_file(input_file)
+    audio.export(output_file, format="wav")

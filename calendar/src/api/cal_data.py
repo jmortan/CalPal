@@ -13,7 +13,7 @@ class CalData:
         #Maps months to their canvas elements
         self.months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 
                                       'September', 'October', 'November', 'December']
-        theming = GenerativeThemingModule()
+        self.themingModule = GenerativeThemingModule()
 
         self.canvases = {}
         self.themes = {}
@@ -23,33 +23,20 @@ class CalData:
         for ii in range(len(self.months)): 
             self.canvases[ii] = canvas
             prompt = "A day in " + self.months[ii] + " in the style of a painting"
-            self.themes[ii] = theming.generate_theme(prompt)
+            self.themes[ii] = self.themingModule.generate_theme(prompt)
             self.events[ii] = {}
 
         self.id = id
-
-    def generate_uplifting_prompt(self, month_events,month):
-        events = ', '.join([event.name for event in month_events.values()])
-        new_prompt = "A serene landscape for " + self.months[month] + ", symbolizing resilience with subtle nods to " + events + " in the style of a painting. The scene feels hopeful and peaceful."
-        return new_prompt
     
-    def generate_motivational_prompt(self, month_events,month):
-        events = ', '.join([event.name for event in month_events.values()])
-        new_prompt = "A dynamic and inspiring scene for " + self.months[month] + ", showing progress and determination with subtle nods to " + events + " in the style of a painting. The colors are bold and energetic."
-        return new_prompt
-    
-    def generate_memory_prompt(self, month_events,month):
-        events = ', '.join([event.name for event in month_events.values()])
-        print(events)
-        new_prompt = "A dreamlike landscape for " + self.months[month] + ", subtly incorporating hints of upcoming events, including " + events + ", in the style of a painting. The scene is immersive and slightly surreal."
-        return new_prompt
 
-    def generate_prompt(self, month_events, month):
+    def generate_theme(self, month, affect=None):
+        month_events = self.events[month]
         events = ', '.join([event.name for event in month_events.values()])
-        new_prompt = "A day in " + self.months[month] + " with " + events + "in the style of a painting"
-        print(new_prompt)
-        return new_prompt
+        month_name = self.months[month]
+        new_prompt = self.themingModule.determine_prompt_from_affect(affect, month_name, events)
+        self.themes[month] = self.themingModule.generate_theme(new_prompt)
         
+
     def add_event(self, month, coord1, coord2, event_id, event_name, event_start, event_end, assistant_scheduled=False):
         #assert(month>=0)
         #assert(month<11)
@@ -57,29 +44,11 @@ class CalData:
         month_events = self.events[month]
         month_events[event_id] = new_event
 
-    def generate_theme(self, month):
-        month_events = self.events[month]
-        new_prompt = self.generate_prompt(month_events, month)
-        self.themes[month] = GenerativeThemingModule().generate_theme(new_prompt)
 
     def update_canvas(self, month, canvas):
         self.canvases[month] = canvas
-
-    def change_theme(self, month, affect):
-        month_events = self.events[month]
-        if affect == "Discouraged":
-            print("Generating Uplifting Theme")
-            new_prompt = self.generate_uplifting_prompt(month_events, month)
-            self.themes[month] = GenerativeThemingModule().generate_theme(new_prompt)
-        elif affect == "Unfocused":
-            print("Generating Motivational Theme")
-            new_prompt = self.generate_motivational_prompt(month_events, month)
-            self.themes[month] = GenerativeThemingModule().generate_theme(new_prompt)
-        elif affect == "Nostalgic":
-            print("Generating Memorable Theme")
-            new_prompt = self.generate_memory_prompt(month_events, month)
-            self.themes[month] = GenerativeThemingModule().generate_theme(new_prompt)
     
+
     def delete_event(self, month, canvas, event_id): 
         #assert(month>=0)
         #assert(month<11)
@@ -97,7 +66,8 @@ class CalData:
         #assert(month<11)
 
         return self.canvases[month]
-    
+
+
     def get_month_events(self, month): 
         #assert(month>=0)
         #assert(month<11)
@@ -105,6 +75,7 @@ class CalData:
         for key, val in self.events[month].items(): 
             serializable_dict[key] = (val.coord1, val.coord2)
         return serializable_dict
+
 
     def get_events(self, months_from_today = 3):
         """
@@ -126,6 +97,7 @@ class CalData:
 
     def get_month_theme(self, month): 
         return self.themes[month]
+
 
     def get_cal_id(self):
         return self.id

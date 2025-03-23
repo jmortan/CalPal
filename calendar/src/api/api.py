@@ -14,7 +14,6 @@ from open_ai_client import OpenAiClient
 from generative_scheduling import GenerativeSchedulingModule
 from emotion_classifier import EmotionClassifierModule
 import base64
-from pydub import AudioSegment
 
 app = Flask(__name__)
 
@@ -33,9 +32,6 @@ statuses = Enum('Statuses', ['Forward', 'Backward', 'Empty'])
 
 flipped = statuses.Empty
 
-def convert_to_wav(input_file, output_file):
-    audio = AudioSegment.from_file(input_file)
-    audio.export(output_file, format="wav")
 
 @app.route('/monthEvents', methods = ['GET'])
 def get_month(): 
@@ -49,6 +45,7 @@ def get_month():
 
     month_info = {'month': month_canvas, 'bbox': bb_dict}
     return json.dumps(month_info)
+
 
 @app.route('/monthTheme',methods = ['GET'])
 def get_theme():
@@ -154,8 +151,9 @@ def add_speech():
         # Update theming based on the classified affect of the user's statement
         emotion_string = EmotionClassifierModule(client).classify_emotion(transcription)
         emotion = json.loads(emotion_string)["classified_emotion"]
-        calData.change_theme(int(month),emotion)
+        calData.generate_theme(int(month), emotion)
         return json.dumps({'monthchange':True})
+
 
 @app.route('/updateGesture/<update>', methods = ['HEAD'])
 def update_gesture(update):
@@ -165,6 +163,7 @@ def update_gesture(update):
     else: 
         flipped = statuses.Backward
     return Response(status = status.HTTP_200_OK)
+
 
 @app.route('/lookGesture', methods=['GET'])
 def look_gesture():
