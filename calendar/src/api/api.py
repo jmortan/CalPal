@@ -105,8 +105,8 @@ def add_event():
             pickle.dump(calData, file)
     return Response(created_event['id'], status = status.HTTP_200_OK)
     
-@app.route('/addSpeech', methods=['POST'])
-def add_speech():
+@app.route('/processSpeech', methods=['POST'])
+def process_speech():
     file = request.files.get('file')
     filename="recording.webm"
     file_path = os.path.join(UPLOAD_FOLDER, filename)
@@ -126,27 +126,6 @@ def add_speech():
         user_events = calData.get_events()
         scheduled_events = GenerativeSchedulingModule(client).process_user_goal(transcription, user_events)
         events = json.loads(scheduled_events)["events"]
-        months = set()
-        for event in events: 
-            event_name = event["event_description"]
-            event_start = event["event_start"]
-            event_end = event["event_end"]
-            gcal_event = {
-                'summary': event_name,
-                'start': {
-                    'dateTime': event_start,
-                },
-                'end': {
-                    'dateTime': event_end,
-                },
-            }
-            gcal_event = service.events().insert(calendarId='primary', body=gcal_event).execute()
-            event["event_id"] = gcal_event["id"]
-            event_month = datetime.fromisoformat(event_start).month - 1
-            calData.add_event(event_month, None, None, event['id'], event_name, event_start, event_end, True)
-            months.add(event_month)
-        for event_month in months:
-            calData.generate_theme(event_month)
         return json.dumps(events)
     else:
         print("Did not detect goal")
@@ -154,8 +133,41 @@ def add_speech():
         emotion_string = EmotionClassifierModule(client).classify_emotion(transcription)
         emotion = json.loads(emotion_string)["classified_emotion"]
         calData.generate_theme(int(month), emotion)
+        with open(FILEPATH, 'wb') as file:
+            pickle.dump(calData, file)
         return json.dumps({'monthchange':True})
 
+@app.route('/addAiEvents', methods=['POST'])
+def add_events():
+    data = request.json
+    events = data["events"]
+    canvas = data["canvas"]
+    month = data["month"]
+    for event in events: 
+        event_name = event["event_description"]
+        event_start = event["event_start"]
+        event_end = event["event_end"]
+        coord1, coord2 = event["bbox"]
+        gcal_event = {
+            'summary': event_name,
+            'start': {
+                'dateTime': event_start,
+            },
+            'end': {
+                'dateTime': event_end,
+            },
+        }
+        gcal_event = service.events().insert(calendarId='primary', body=gcal_event).execute()
+        event["event_id"] = gcal_event["id"]
+        event_month = datetime.fromisoformat(event_start).month - 1
+        calData.add_event(event_month, coord1, coord2, event['event_id'], event_name, event_start, event_end, True)
+        months = set()
+        months.add(event_month)
+    for event_month in months:
+        calData.generate_theme(event_month)
+    calData.update_canvas(month, canvas)
+    with open(FILEPATH, 'wb') as file:
+        pickle.dump(calData, file)
 
 @app.route('/updateGesture/<update>', methods = ['HEAD'])
 def update_gesture(update):
