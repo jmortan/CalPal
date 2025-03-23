@@ -22,7 +22,7 @@ class CalData:
 
         for ii in range(len(self.months)): 
             self.canvases[ii] = canvas
-            prompt = "A day in " + self.months[ii] + " in the style of a painting"
+            prompt = "A day in " + self.months[ii] + ". The image you generate should NOT contain any text."
             self.themes[ii] = self.themingModule.generate_theme(prompt)
             self.events[ii] = {}
 
