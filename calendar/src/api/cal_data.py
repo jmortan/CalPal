@@ -56,8 +56,8 @@ class CalData:
         month_events = self.events[month]
         del month_events[event_id]
         self.canvases[month] = canvas
-
-        new_prompt = self.generate_prompt(month_events, month)
+        events = ', '.join([event.name for event in month_events.values()])
+        new_prompt = GenerativeThemingModule.generate_prompt(month, events)
         self.themes[month] = GenerativeThemingModule().generate_theme(new_prompt)
 
 
