@@ -77,7 +77,7 @@ def modify_event():
 @app.route('/addEvent', methods=['POST'])
 def add_event():
     data = request.json
-    canvas_data, month, dateString = data['canvasData'], data['month'], data['date']
+    canvas_data, month, date_string = data['canvasData'], data['month'], data['date']
     coord1, coord2 = data['bbox'][0], data['bbox'][1]
     img = base64_to_cv2_image(canvas_data)
     cropped = crop_canvas(img, coord1, coord2)
@@ -85,14 +85,13 @@ def add_event():
     event_writing = canvas_handwriting_detection(cropped,  visionCreds) 
     if (event_writing=="No text detected"):
         return Response("Not detected", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    event_query = event_writing + " on " + dateString
+    event_query = event_writing + " on " + date_string
     created_event = service.events().quickAdd(calendarId = calData.get_cal_id(), text=event_query).execute()
 
     # Set up time defaults for all day events
-    local_timezone = get_localzone()
-    now = datetime.now(local_timezone)
-    start_of_day = now.replace(hour=0, minute=0, second=0, microsecond=0).isoformat()
-    end_of_day = now.replace(hour=23, minute=59, second=59, microsecond=999999).isoformat()
+    current_date = datetime.strptime(date_string, "%a %b %d %Y")
+    start_of_day = current_date.replace(hour=0, minute=0, second=0, microsecond=0).isoformat()
+    end_of_day = current_date.replace(hour=23, minute=59, second=59, microsecond=999999).isoformat()
 
     event_start = created_event.get("start", {"dateTime": start_of_day}).get("dateTime")
     event_end = created_event.get("end", {"dateTime": end_of_day}).get("dateTime")
